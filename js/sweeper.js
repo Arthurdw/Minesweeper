@@ -4,8 +4,8 @@ const setup = {
     field: {
         rows: 50,
         itemsPerRow: 50,
-        width: 600,
-        height: 600
+        width: 500,
+        height: 500
     }
 };
 
@@ -62,7 +62,7 @@ class Item {
             this.obj.style.backgroundColor = this.marked ? "salmon" : this.active && this.bomb ? "red" : this.inner > 0 ? "#414141" : this.active ? "darkgray" : "greenyellow";
             this.updated = true;
             if (this.inner == 0 && !this.bomb && !rightClick) clickEmptyRelative(this.index);
-            if (this.bomb) {
+            if (this.bomb && !this.marked) {
                 title.innerHTML = "Minesweeper made by Arthurdw<br><span style='color: red; font-weight: bold;'>You triggered a mine!</span>";
                 retry.style.opacity = 1;
                 retry.style.cursor = "pointer";
@@ -115,10 +115,13 @@ function displayItem() {
 
 // Add a flag to an item:
 function addFlag() {
-    data[this.getAttribute("data-idx")].marked = true;
-    data[this.getAttribute("data-idx")].update(true);
-    --_points;
-    points.innerHTML = _points;
+    if (_points <= 0) points.innerHTML = 0;
+    else {
+        data[this.getAttribute("data-idx")].marked = true;
+        --_points;
+        points.innerHTML = _points;
+        data[this.getAttribute("data-idx")].update(true);
+    }
 }
 
 // Mine detectors:
@@ -171,9 +174,10 @@ function retryMinesweeper() {
 }
 
 // Just a little worthless timer:
-setInterval(function() {
+setInterval(function () {
     const val = parseInt(localStorage.getItem("playtime"));
-    localStorage.setItem("playtime", val + 1);
+    if (!val) localStorage.setItem("playtime", 1);
+    else localStorage.setItem("playtime", val + 1);
     playtime.innerHTML = `${Math.floor(val / 3600)}:${Math.floor((val / 60) % 60)}:${val % 60}`;
 }, 1000);
 
